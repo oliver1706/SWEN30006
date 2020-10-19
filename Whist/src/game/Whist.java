@@ -172,7 +172,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
             // selected = randomCard(hands[nextPlayer]);
-			selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, i);
+			selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size());
         }
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -201,7 +201,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
 		        // selected = randomCard(hands[nextPlayer]);
-				selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, i);
+				selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size()-j);
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
