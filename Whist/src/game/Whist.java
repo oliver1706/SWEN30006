@@ -5,6 +5,8 @@ import ch.aplu.jgamegrid.*;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -48,7 +50,6 @@ public class Whist extends CardGame {
   public boolean rankGreater(Card card1, Card card2) {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
-	 
   private final String version = "1.0";
   public final int nbPlayers = 4;
   public final int nbStartCards = 13;
@@ -76,6 +77,8 @@ public class Whist extends CardGame {
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
+
+  public AI ai;
 
   public void setStatus(String string) { setStatusText(string); }
   
@@ -157,7 +160,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
             // selected = randomCard(hands[nextPlayer]);
-			selected = AI.getCard(trick, hands[nextPlayer], trumps, lead, nextPlayer, i);
+			selected = ai.getCard(trick, hands[nextPlayer], trumps, lead, nextPlayer, i);
         }
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -182,7 +185,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
 		        // selected = randomCard(hands[nextPlayer]);
-				selected = AI.getCard(trick, hands[nextPlayer], trumps, lead, nextPlayer, i);
+				selected = ai.getCard(trick, hands[nextPlayer], trumps, lead, nextPlayer, i);
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -230,12 +233,13 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	return Optional.empty();
 }
 
-  public Whist()
+  public Whist() throws Exception
   {
     super(700, 700, 30);
     setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
     initScore();
+    ai = new AI();
     Optional<Integer> winner;
     do { 
       initRound();
@@ -246,9 +250,49 @@ private Optional<Integer> playRound() {  // Returns winner, if any
     refresh();
   }
 
-  public static void main(String[] args)
+  public static void main(String[] args) throws Exception
   {
-    new Whist();
+	  try (FileReader inStream = new FileReader("whist.properties")) {
+		  Properties properties = new Properties();
+		  properties.load(inStream);
+		  STARTING_CARDS = Integer.parseInt(properties.getProperty("StartingCards"));
+		  PLAYER_0 = Integer.parseInt(properties.getProperty("Player0"));
+		  if(PLAYER_0 == 1){
+			  PLAYER_0_FILTER_STRATEGY = properties.getProperty("Player0FilterStrategy");
+			  PLAYER_0_SELECTION_STRATEGY = properties.getProperty("Player0SelectionStrategy");
+		  }
+		  PLAYER_1 = Integer.parseInt(properties.getProperty("Player1"));
+		  if(PLAYER_1 == 1){
+			  PLAYER_1_FILTER_STRATEGY = properties.getProperty("Player1FilterStrategy");
+			  PLAYER_1_SELECTION_STRATEGY = properties.getProperty("Player1SelectionStrategy");
+		  }
+		  PLAYER_2 = Integer.parseInt(properties.getProperty("Player2"));
+		  if(PLAYER_2 == 1){
+			  PLAYER_2_FILTER_STRATEGY = properties.getProperty("Player2FilterStrategy");
+			  PLAYER_2_SELECTION_STRATEGY = properties.getProperty("Player2SelectionStrategy");
+		  }
+		  PLAYER_3 = Integer.parseInt(properties.getProperty("Player3"));
+		  if(PLAYER_3 == 1){
+			  PLAYER_3_FILTER_STRATEGY = properties.getProperty("Player3FilterStrategy");
+			  PLAYER_3_SELECTION_STRATEGY = properties.getProperty("Player3SelectionStrategy");
+		  }
+	  }
+
+	  new Whist();
   }
+
+ 	public static int STARTING_CARDS;
+ 	public static int PLAYER_0;
+  	public static String PLAYER_0_FILTER_STRATEGY;
+    public static String PLAYER_0_SELECTION_STRATEGY;
+	public static int PLAYER_1;
+	public static String PLAYER_1_FILTER_STRATEGY;
+	public static String PLAYER_1_SELECTION_STRATEGY;
+	public static int PLAYER_2;
+	public static String PLAYER_2_FILTER_STRATEGY;
+	public static String PLAYER_2_SELECTION_STRATEGY;
+	public static int PLAYER_3;
+	public static String PLAYER_3_FILTER_STRATEGY;
+	public static String PLAYER_3_SELECTION_STRATEGY;
 
 }
