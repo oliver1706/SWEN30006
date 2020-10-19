@@ -48,8 +48,6 @@ public class Whist extends CardGame {
   }
   private final String version = "1.0";
   public final int nbPlayers = 4;
-  public final int nbStartCards = 13;
-  public final int winningScore = 24;
   private final int handWidth = 400;
   private final int trickWidth = 40;
   private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
@@ -161,7 +159,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	do {
 		nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 	} while (PLAYERS[nextPlayer] == 0);
-	for (int i = 0; i < nbStartCards; i++) {
+	for (int i = 0; i < STARTING_CARDS; i++) {
 		trick = new Hand(deck);
     	selected = null;
         if (PLAYERS[nextPlayer] == 2) {  // Select lead depending on player type
@@ -243,7 +241,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		lead = null;
 		scores[nextPlayer]++;
 		updateScore(nextPlayer);
-		if (winningScore == scores[nextPlayer]) return Optional.of(nextPlayer);
+		if (WINNING_SCORE == scores[nextPlayer]) return Optional.of(nextPlayer);
 	}
 	removeActor(trumpsActor);
 	return Optional.empty();
@@ -272,6 +270,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		  Properties properties = new Properties();
 		  properties.load(inStream);
 		  STARTING_CARDS = Integer.parseInt(properties.getProperty("StartingCards"));
+		  WINNING_SCORE = Integer.parseInt(properties.getProperty("WinningScore"));
 		  PLAYER_0 = Integer.parseInt(properties.getProperty("Player0"));
 		  PLAYERS[0] = PLAYER_0;
 		  if(PLAYER_0 == 1){
@@ -304,6 +303,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
   }
 	public static int PLAYERS[] = new int[4];
  	public static int STARTING_CARDS;
+	public static int WINNING_SCORE;
  	public static int PLAYER_0;
   	public static String PLAYER_0_FILTER_STRATEGY;
     public static String PLAYER_0_SELECTION_STRATEGY;
