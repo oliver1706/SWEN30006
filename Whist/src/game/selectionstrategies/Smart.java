@@ -10,11 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Smart implements SelectionStrategy {
-    java.util.Random random = new  java.util.Random();
     @Override
     public Card getCard(List<Card> hand, Whist.Suit trump, Whist.Suit lead, Hand currentTrick, int player, int turnsLeft) {
         if (lead == null) {
-            return hand.get(random.nextInt(hand.size()));
+            return hand.get(Whist.random.nextInt(hand.size()));
         }
         HighestCardSorter highestCardSorter = new HighestCardSorter(trump, lead);
         List<Card> playedCards = currentTrick.getCardList();

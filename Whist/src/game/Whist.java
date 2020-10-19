@@ -6,9 +6,7 @@ import ch.aplu.jgamegrid.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("serial")
 public class Whist extends CardGame {
@@ -26,8 +24,6 @@ public class Whist extends CardGame {
   }
   
   final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
-
-  static final Random random = ThreadLocalRandom.current();
   
   // return random Enum value
   public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
@@ -73,7 +69,7 @@ public class Whist extends CardGame {
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
   private final int thinkingTime = 2000;
-  private Hand[] hands;
+  private Map<Integer, Hand> hands = new HashMap<>();
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
@@ -103,30 +99,43 @@ private void updateScore(int player) {
 private Card selected;
 
 private void initRound() {
-		 hands = deck.dealingOut(nbPlayers, nbStartCards); // Last element of hands is leftover cards; these are ignored
-		 for (int i = 0; i < nbPlayers; i++) {
-			   hands[i].sort(Hand.SortType.SUITPRIORITY, true);
-		 }
-		 // Set up human player for interaction
-		CardListener cardListener = new CardAdapter()  // Human Player plays card
-			    {
-			      public void leftDoubleClicked(Card card) { selected = card; hands[0].setTouchEnabled(false); }
-			    };
-		hands[0].addCardListener(cardListener);
+		Hand pack = deck.toHand(false);
 		 // graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
-	    for (int i = 0; i < nbPlayers; i++) {
+	    for (int i = 0; i < PLAYERS.length; i++) {
+	      if(PLAYERS[i] == 0){
+	      	continue;
+	      }
+	      dealCards(STARTING_CARDS, i, deck, pack);
 	      layouts[i] = new RowLayout(handLocations[i], handWidth);
 	      layouts[i].setRotationAngle(90 * i);
 	      // layouts[i].setStepDelay(10);
-	      hands[i].setView(this, layouts[i]);
-	      hands[i].setTargetArea(new TargetArea(trickLocation));
-	      hands[i].draw();
+	      hands.get(i).setView(this, layouts[i]);
+	      hands.get(i).setTargetArea(new TargetArea(trickLocation));
+	      hands.get(i).draw();
 	    }
 	    
 //	    for (int i = 1; i < nbPlayers; i++)  // This code can be used to visually hide the cards in a hand (make them face down)
 //	      hands[i].setVerso(true);
 	    // End graphics
+ }
+
+ private void dealCards(int cardsToDeal, int player, Deck deck, Hand pack) {
+	 hands.put(player, new Hand(deck));
+	 for(int i = 0; i<cardsToDeal; i++) {
+		 int x = random.nextInt(pack.getNumberOfCards());
+		 Card dealt = pack.get(x);
+		 dealt.removeFromHand(false);
+		 hands.get(player).insert(dealt, false);
+	 }
+	 hands.get(player).sort(Hand.SortType.SUITPRIORITY, true);
+	 if(PLAYERS[player] != 2) return;
+	 // Set up human player for interaction
+	 CardListener cardListener = new CardAdapter()  // Human Player plays card
+	 {
+		 public void leftDoubleClicked(Card card) { selected = card; hands.get(player).setTouchEnabled(false); }
+	 };
+	 hands.get(player).addCardListener(cardListener);
  }
 
 private String printHand(ArrayList<Card> cards) {
@@ -148,19 +157,22 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	int winner;
 	Card winningCard;
 	Suit lead = null;
-	int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
+	int nextPlayer;
+	do {
+		nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
+	} while (PLAYERS[nextPlayer] == 0);
 	for (int i = 0; i < nbStartCards; i++) {
 		trick = new Hand(deck);
     	selected = null;
-        if (0 == nextPlayer) {  // Select lead depending on player type
-    		hands[0].setTouchEnabled(true);
-    		setStatus("Player 0 double-click on card to lead.");
+        if (PLAYERS[nextPlayer] == 2) {  // Select lead depending on player type
+    		hands.get(nextPlayer).setTouchEnabled(true);
+    		setStatus("Player " + nextPlayer + " double-click on card to lead.");
     		while (null == selected) delay(100);
         } else {
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
             // selected = randomCard(hands[nextPlayer]);
-			selected = ai.getCard(trick, hands[nextPlayer], trumps, lead, nextPlayer, i);
+			selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, i);
         }
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -172,27 +184,31 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 			winner = nextPlayer;
 			winningCard = selected;
 			System.out.println("New trick: Lead Player = "+nextPlayer+", Lead suit = "+selected.getSuit()+", Trump suit = "+trumps);
-			System.out.println("Player "+nextPlayer+" play: "+selected.toString()+" from ["+printHand(hands[nextPlayer].getCardList())+"]");
+			System.out.println("Player "+nextPlayer+" play: "+selected.toString()+" from ["+printHand(hands.get(nextPlayer).getCardList())+"]");
 		// End Lead
-		for (int j = 1; j < nbPlayers; j++) {
-			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
+		for (int j = 1; j < hands.size(); j++) {
+			do {
+				nextPlayer++;
+				if (nextPlayer >= nbPlayers)
+					nextPlayer = 0;  // From last back to first
+			} while(PLAYERS[nextPlayer] == 0);
 			selected = null;
-	        if (0 == nextPlayer) {
-	    		hands[0].setTouchEnabled(true);
+	        if (PLAYERS[nextPlayer] == 2) {
+	    		hands.get(nextPlayer).setTouchEnabled(true);
 	    		setStatus("Player 0 double-click on card to follow.");
 	    		while (null == selected) delay(100);
 	        } else {
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
 		        // selected = randomCard(hands[nextPlayer]);
-				selected = ai.getCard(trick, hands[nextPlayer], trumps, lead, nextPlayer, i);
+				selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, i);
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 				trick.draw();
 				selected.setVerso(false);  // In case it is upside down
 				// Check: Following card must follow suit if possible
-					if (selected.getSuit() != lead && hands[nextPlayer].getNumberOfCardsWithSuit(lead) > 0) {
+					if (selected.getSuit() != lead && hands.get(nextPlayer).getNumberOfCardsWithSuit(lead) > 0) {
 						 // Rule violation
 						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
 						 //System.out.println(violation);
@@ -208,7 +224,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 				// End Check
 				 selected.transfer(trick, true); // transfer to trick (includes graphic effect)
 				 System.out.println("Winning card: "+winningCard.toString());
-				 System.out.println("Player "+nextPlayer+" play: "+selected.toString()+" from ["+printHand(hands[nextPlayer].getCardList())+"]");
+				 System.out.println("Player "+nextPlayer+" play: "+selected.toString()+" from ["+printHand(hands.get(nextPlayer).getCardList())+"]");
 				 if ( // beat current winner with higher card
 					 (selected.getSuit() == winningCard.getSuit() && rankGreater(selected, winningCard)) ||
 					  // trumped when non-trump was winning
@@ -257,30 +273,36 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		  properties.load(inStream);
 		  STARTING_CARDS = Integer.parseInt(properties.getProperty("StartingCards"));
 		  PLAYER_0 = Integer.parseInt(properties.getProperty("Player0"));
+		  PLAYERS[0] = PLAYER_0;
 		  if(PLAYER_0 == 1){
 			  PLAYER_0_FILTER_STRATEGY = properties.getProperty("Player0FilterStrategy");
 			  PLAYER_0_SELECTION_STRATEGY = properties.getProperty("Player0SelectionStrategy");
 		  }
 		  PLAYER_1 = Integer.parseInt(properties.getProperty("Player1"));
+		  PLAYERS[1] = PLAYER_1;
 		  if(PLAYER_1 == 1){
 			  PLAYER_1_FILTER_STRATEGY = properties.getProperty("Player1FilterStrategy");
 			  PLAYER_1_SELECTION_STRATEGY = properties.getProperty("Player1SelectionStrategy");
 		  }
 		  PLAYER_2 = Integer.parseInt(properties.getProperty("Player2"));
+		  PLAYERS[2] = PLAYER_2;
 		  if(PLAYER_2 == 1){
 			  PLAYER_2_FILTER_STRATEGY = properties.getProperty("Player2FilterStrategy");
 			  PLAYER_2_SELECTION_STRATEGY = properties.getProperty("Player2SelectionStrategy");
 		  }
 		  PLAYER_3 = Integer.parseInt(properties.getProperty("Player3"));
+		  PLAYERS[3] = PLAYER_3;
 		  if(PLAYER_3 == 1){
 			  PLAYER_3_FILTER_STRATEGY = properties.getProperty("Player3FilterStrategy");
 			  PLAYER_3_SELECTION_STRATEGY = properties.getProperty("Player3SelectionStrategy");
 		  }
+		  int seed = Integer.parseInt(properties.getProperty("Seed"));
+		  random = new Random(seed);
 	  }
 
 	  new Whist();
   }
-
+	public static int PLAYERS[] = new int[4];
  	public static int STARTING_CARDS;
  	public static int PLAYER_0;
   	public static String PLAYER_0_FILTER_STRATEGY;
@@ -294,5 +316,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	public static int PLAYER_3;
 	public static String PLAYER_3_FILTER_STRATEGY;
 	public static String PLAYER_3_SELECTION_STRATEGY;
+
+	public static Random random;
 
 }
