@@ -11,7 +11,7 @@ public class Player {
             playerType = PlayerType.valueOf(status);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Could not load PlayerStatus " + status);
+            System.out.println("Could not load PlayerType " + status + ", valid options are DISABLED, AI and HUMAN.");
             System.exit(1);
         }
         if (playerType == PlayerType.AI) {

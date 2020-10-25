@@ -168,7 +168,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
             // selected = randomCard(hands[nextPlayer]);
-			selected = AI.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size());
+			selected = AI.getCard(trick, hands.get(nextPlayer), trumps, lead, PLAYERS[nextPlayer], hands.size());
         }
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -197,7 +197,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
 		        // selected = randomCard(hands[nextPlayer]);
-				selected = AI.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size()-j);
+				selected = AI.getCard(trick, hands.get(nextPlayer), trumps, lead, PLAYERS[nextPlayer], hands.size()-j);
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -281,7 +281,15 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	  } catch (Exception e) {
 		  e.printStackTrace();
 		  System.out.println("Error loading in properties");
-		  System.exit(0);
+		  System.exit(1);
+	  }
+
+	  if(PLAYERS[0].getPlayerType() == PlayerType.DISABLED &&
+			  PLAYERS[1].getPlayerType() == PlayerType.DISABLED &&
+			  PLAYERS[2].getPlayerType() == PlayerType.DISABLED &&
+			  PLAYERS[3].getPlayerType() == PlayerType.DISABLED){
+		  System.out.println("All 4 players were marked as disabled, Whist does not support this.");
+		  System.exit(1);
 	  }
 
 	  new Whist();
