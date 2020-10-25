@@ -9,7 +9,7 @@ import java.util.List;
 
 public class NaiveLegal implements FilterStrategy {
     @Override
-    public List<Card> getFilteredHand(Hand currentHand, Whist.Suit trump, Whist.Suit lead, int player) {
+    public List<Card> getFilteredHand(Hand currentHand, Whist.Suit trump, Whist.Suit lead) {
         List<Card> trumpAndLeadCards = currentHand.getCardsWithSuit(lead);
         if (trump != lead) {
             trumpAndLeadCards.addAll(currentHand.getCardsWithSuit(trump));

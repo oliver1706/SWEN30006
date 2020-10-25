@@ -9,7 +9,7 @@ import java.util.List;
 
 public class None implements FilterStrategy {
     @Override
-    public List<Card> getFilteredHand(Hand currentHand, Whist.Suit trump, Whist.Suit lead, int player) {
+    public List<Card> getFilteredHand(Hand currentHand, Whist.Suit trump, Whist.Suit lead) {
         return currentHand.getCardList();
     }
 }

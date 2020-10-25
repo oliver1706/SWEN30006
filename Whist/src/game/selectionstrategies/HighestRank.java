@@ -11,7 +11,7 @@ import java.util.List;
 
 public class HighestRank implements SelectionStrategy {
     @Override
-    public Card getCard(List<Card> hand, Whist.Suit trump, Whist.Suit lead, Hand currentTrick, int player, int turnsLeft) {
+    public Card getCard(List<Card> hand, Whist.Suit trump, Whist.Suit lead, Hand currentTrick, int turnsLeft) {
         hand.sort(new HighestRankSorter());
         return hand.get(0);
     }

@@ -7,5 +7,5 @@ import game.Whist.Suit;
 import java.util.List;
 
 public interface SelectionStrategy {
-    public Card getCard(List<Card> hand, Suit trump, Suit lead, Hand currentTrick, int player, int turnsLeft);
+    public Card getCard(List<Card> hand, Suit trump, Suit lead, Hand currentTrick, int turnsLeft);
 }

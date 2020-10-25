@@ -7,5 +7,5 @@ import game.Whist.Suit;
 import java.util.List;
 
 public interface FilterStrategy {
-    public List<Card> getFilteredHand(Hand currentHand, Suit trump, Suit lead, int player);
+    public List<Card> getFilteredHand(Hand currentHand, Suit trump, Suit lead);
 }

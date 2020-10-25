@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class AI {
     private static final Comparator<Card> rankComparator = new HighestRankSorter();
 
-    public static Card getCard(Hand currentTrick, Hand currentHand, Suit trump, Suit lead, int player, int turnsLeft) {
+    public static Card getCard(Hand currentTrick, Hand currentHand, Suit trump, Suit lead, Player player, int turnsLeft) {
         List<Card> filteredHand;
         if(lead != null){
             filteredHand = getFilteredHand(currentHand, trump, lead, player);
@@ -24,12 +24,12 @@ public class AI {
         return getCardToPlay(filteredHand, trump, lead, currentTrick, player, turnsLeft);
     }
 
-    private static List<Card> getFilteredHand(Hand currentHand, Suit trump, Suit lead, int player){
-        return Whist.PLAYERS[player].getFilterStrategy().getFilteredHand(currentHand, trump, lead, player);
+    private static List<Card> getFilteredHand(Hand currentHand, Suit trump, Suit lead, Player player){
+        return player.getFilterStrategy().getFilteredHand(currentHand, trump, lead);
     }
 
-    private static Card getCardToPlay(List<Card> filteredHand, Suit trump, Suit lead, Hand currentTrick, int player, int turn){
-        return Whist.PLAYERS[player].getSelectionStrategy().getCard(filteredHand, trump, lead, currentTrick, player, turn);
+    private static Card getCardToPlay(List<Card> filteredHand, Suit trump, Suit lead, Hand currentTrick, Player player, int turnsLeft){
+        return player.getSelectionStrategy().getCard(filteredHand, trump, lead, currentTrick, turnsLeft);
     }
 
     private static class HighestRankSorter implements Comparator<Card>{

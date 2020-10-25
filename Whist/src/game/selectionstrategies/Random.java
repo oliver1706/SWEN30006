@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Random implements SelectionStrategy {
     @Override
-    public Card getCard(List<Card> hand, Whist.Suit trump, Whist.Suit lead, Hand currentTrick, int player, int turnsLeft) {
+    public Card getCard(List<Card> hand, Whist.Suit trump, Whist.Suit lead, Hand currentTrick, int turnsLeft) {
         return hand.get(Whist.random.nextInt(hand.size()));
     }
 }

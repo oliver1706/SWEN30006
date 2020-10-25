@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class Smart implements SelectionStrategy {
     @Override
-    public Card getCard(List<Card> hand, Whist.Suit trump, Whist.Suit lead, Hand currentTrick, int player, int turnsLeft) {
+    public Card getCard(List<Card> hand, Whist.Suit trump, Whist.Suit lead, Hand currentTrick, int turnsLeft) {
         if (lead == null) {
             return hand.get(Whist.random.nextInt(hand.size()));
         }
