@@ -72,8 +72,6 @@ public class Whist extends CardGame {
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
 
-  public AI ai;
-
   public void setStatus(String string) { setStatusText(string); }
   
 private int[] scores = new int[nbPlayers];
@@ -101,7 +99,7 @@ private void initRound() {
 		 // graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
 	    for (int i = 0; i < PLAYERS.length; i++) {
-	      if(PLAYERS[i] == 0){
+	      if(PLAYERS[i].getPlayerType() == PlayerType.DISABLED){
 	      	continue;
 	      }
 	      dealCards(STARTING_CARDS, i, deck, pack);
@@ -127,7 +125,7 @@ private void initRound() {
 		 hands.get(player).insert(dealt, false);
 	 }
 	 hands.get(player).sort(Hand.SortType.SUITPRIORITY, true);
-	 if(PLAYERS[player] != 2) return;
+	 if(PLAYERS[player].getPlayerType() != PlayerType.HUMAN) return;
 	 // Set up human player for interaction
 	 CardListener cardListener = new CardAdapter()  // Human Player plays card
 	 {
@@ -158,11 +156,11 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	int nextPlayer;
 	do {
 		nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
-	} while (PLAYERS[nextPlayer] == 0);
+	} while (PLAYERS[nextPlayer].getPlayerType() == PlayerType.DISABLED);
 	for (int i = 0; i < STARTING_CARDS; i++) {
 		trick = new Hand(deck);
     	selected = null;
-        if (PLAYERS[nextPlayer] == 2) {  // Select lead depending on player type
+        if (PLAYERS[nextPlayer].getPlayerType() == PlayerType.HUMAN) {  // Select lead depending on player type
     		hands.get(nextPlayer).setTouchEnabled(true);
     		setStatus("Player " + nextPlayer + " double-click on card to lead.");
     		while (null == selected) delay(100);
@@ -170,7 +168,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
             // selected = randomCard(hands[nextPlayer]);
-			selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size());
+			selected = AI.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size());
         }
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -189,9 +187,9 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 				nextPlayer++;
 				if (nextPlayer >= nbPlayers)
 					nextPlayer = 0;  // From last back to first
-			} while(PLAYERS[nextPlayer] == 0);
+			} while(PLAYERS[nextPlayer].getPlayerType() == PlayerType.DISABLED);
 			selected = null;
-	        if (PLAYERS[nextPlayer] == 2) {
+	        if (PLAYERS[nextPlayer].getPlayerType() == PlayerType.HUMAN) {
 	    		hands.get(nextPlayer).setTouchEnabled(true);
 	    		setStatus("Player 0 double-click on card to follow.");
 	    		while (null == selected) delay(100);
@@ -199,7 +197,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
 		        // selected = randomCard(hands[nextPlayer]);
-				selected = ai.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size()-j);
+				selected = AI.getCard(trick, hands.get(nextPlayer), trumps, lead, nextPlayer, hands.size()-j);
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
@@ -216,8 +214,8 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 								} catch (BrokeRuleException e) {
 									e.printStackTrace();
 									System.out.println("A cheating player spoiled the game!");
-									System.exit(0);
-								}  
+									System.exit(1);
+								}
 					 }
 				// End Check
 				 selected.transfer(trick, true); // transfer to trick (includes graphic effect)
@@ -247,13 +245,12 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	return Optional.empty();
 }
 
-  public Whist() throws Exception
+  public Whist()
   {
     super(700, 700, 30);
     setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
     initScore();
-    ai = new AI();
     Optional<Integer> winner;
     do { 
       initRound();
@@ -264,59 +261,34 @@ private Optional<Integer> playRound() {  // Returns winner, if any
     refresh();
   }
 
-  public static void main(String[] args) throws Exception
+  public static void main(String[] args)
   {
 	  try (FileReader inStream = new FileReader("whist.properties")) {
 		  Properties properties = new Properties();
 		  properties.load(inStream);
 		  STARTING_CARDS = Integer.parseInt(properties.getProperty("StartingCards"));
 		  WINNING_SCORE = Integer.parseInt(properties.getProperty("WinningScore"));
-		  PLAYER_0 = Integer.parseInt(properties.getProperty("Player0"));
-		  PLAYERS[0] = PLAYER_0;
-		  if(PLAYER_0 == 1){
-			  PLAYER_0_FILTER_STRATEGY = properties.getProperty("Player0FilterStrategy");
-			  PLAYER_0_SELECTION_STRATEGY = properties.getProperty("Player0SelectionStrategy");
-		  }
-		  PLAYER_1 = Integer.parseInt(properties.getProperty("Player1"));
-		  PLAYERS[1] = PLAYER_1;
-		  if(PLAYER_1 == 1){
-			  PLAYER_1_FILTER_STRATEGY = properties.getProperty("Player1FilterStrategy");
-			  PLAYER_1_SELECTION_STRATEGY = properties.getProperty("Player1SelectionStrategy");
-		  }
-		  PLAYER_2 = Integer.parseInt(properties.getProperty("Player2"));
-		  PLAYERS[2] = PLAYER_2;
-		  if(PLAYER_2 == 1){
-			  PLAYER_2_FILTER_STRATEGY = properties.getProperty("Player2FilterStrategy");
-			  PLAYER_2_SELECTION_STRATEGY = properties.getProperty("Player2SelectionStrategy");
-		  }
-		  PLAYER_3 = Integer.parseInt(properties.getProperty("Player3"));
-		  PLAYERS[3] = PLAYER_3;
-		  if(PLAYER_3 == 1){
-			  PLAYER_3_FILTER_STRATEGY = properties.getProperty("Player3FilterStrategy");
-			  PLAYER_3_SELECTION_STRATEGY = properties.getProperty("Player3SelectionStrategy");
-		  }
+		  PLAYERS[0] = new Player(properties.getProperty("Player0"),
+				  properties.getProperty("Player0FilterStrategy"), properties.getProperty("Player0SelectionStrategy"));
+		  PLAYERS[1] = new Player(properties.getProperty("Player1"),
+				  properties.getProperty("Player1FilterStrategy"), properties.getProperty("Player1SelectionStrategy"));
+		  PLAYERS[2] = new Player(properties.getProperty("Player2"),
+				  properties.getProperty("Player2FilterStrategy"), properties.getProperty("Player2SelectionStrategy"));
+		  PLAYERS[3] = new Player(properties.getProperty("Player3"),
+				  properties.getProperty("Player3FilterStrategy"), properties.getProperty("Player3SelectionStrategy"));
 		  int seed = Integer.parseInt(properties.getProperty("Seed"));
 		  random = new Random(seed);
+	  } catch (Exception e) {
+		  e.printStackTrace();
+		  System.out.println("Error loading in properties");
+		  System.exit(0);
 	  }
 
 	  new Whist();
   }
-	public static int PLAYERS[] = new int[4];
+	public static Player PLAYERS[] = new Player[4];
  	public static int STARTING_CARDS;
 	public static int WINNING_SCORE;
- 	public static int PLAYER_0;
-  	public static String PLAYER_0_FILTER_STRATEGY;
-    public static String PLAYER_0_SELECTION_STRATEGY;
-	public static int PLAYER_1;
-	public static String PLAYER_1_FILTER_STRATEGY;
-	public static String PLAYER_1_SELECTION_STRATEGY;
-	public static int PLAYER_2;
-	public static String PLAYER_2_FILTER_STRATEGY;
-	public static String PLAYER_2_SELECTION_STRATEGY;
-	public static int PLAYER_3;
-	public static String PLAYER_3_FILTER_STRATEGY;
-	public static String PLAYER_3_SELECTION_STRATEGY;
-
 	public static Random random;
 
 }
