@@ -2,34 +2,14 @@ package game;
 
 public class Player {
 
+    private PlayerType playerType;
     private FilterStrategy filterStrategy;
     private SelectionStrategy selectionStrategy;
-    private PlayerType playerType;
 
-    public Player(String status, String filterStrategyString, String selectionStrategyString){
-        try {
-            playerType = PlayerType.valueOf(status);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Could not load PlayerType " + status + ", valid options are DISABLED, AI and HUMAN.");
-            System.exit(1);
-        }
-        if (playerType == PlayerType.AI) {
-            try {
-                filterStrategy = (FilterStrategy) Class.forName(filterStrategyString).getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Could not load FilterStrategy " + filterStrategyString);
-                System.exit(1);
-            }
-            try {
-                selectionStrategy = (SelectionStrategy) Class.forName(selectionStrategyString).getDeclaredConstructor().newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Could not load SelectionStrategy " + selectionStrategyString);
-                System.exit(1);
-            }
-        }
+    public Player(PlayerType type, FilterStrategy filterStrategy, SelectionStrategy selectionStrategy){
+        this.playerType = type;
+        this.filterStrategy = filterStrategy;
+        this.selectionStrategy = selectionStrategy;
     }
 
     public FilterStrategy getFilterStrategy(){

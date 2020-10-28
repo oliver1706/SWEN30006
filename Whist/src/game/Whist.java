@@ -268,13 +268,13 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 		  properties.load(inStream);
 		  STARTING_CARDS = Integer.parseInt(properties.getProperty("StartingCards"));
 		  WINNING_SCORE = Integer.parseInt(properties.getProperty("WinningScore"));
-		  PLAYERS[0] = new Player(properties.getProperty("Player0"),
+		  PLAYERS[0] = PlayerFactory.getPlayer(properties.getProperty("Player0"),
 				  properties.getProperty("Player0FilterStrategy"), properties.getProperty("Player0SelectionStrategy"));
-		  PLAYERS[1] = new Player(properties.getProperty("Player1"),
+		  PLAYERS[1] = PlayerFactory.getPlayer(properties.getProperty("Player1"),
 				  properties.getProperty("Player1FilterStrategy"), properties.getProperty("Player1SelectionStrategy"));
-		  PLAYERS[2] = new Player(properties.getProperty("Player2"),
+		  PLAYERS[2] = PlayerFactory.getPlayer(properties.getProperty("Player2"),
 				  properties.getProperty("Player2FilterStrategy"), properties.getProperty("Player2SelectionStrategy"));
-		  PLAYERS[3] = new Player(properties.getProperty("Player3"),
+		  PLAYERS[3] = PlayerFactory.getPlayer(properties.getProperty("Player3"),
 				  properties.getProperty("Player3FilterStrategy"), properties.getProperty("Player3SelectionStrategy"));
 		  int seed = Integer.parseInt(properties.getProperty("Seed"));
 		  random = new Random(seed);
