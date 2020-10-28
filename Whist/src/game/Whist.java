@@ -295,7 +295,7 @@ private Optional<Integer> playRound() {  // Returns winner, if any
 	  new Whist();
   }
 	public static Player PLAYERS[] = new Player[4];
- 	public static int STARTING_CARDS;
+ 	private static int STARTING_CARDS;
 	public static int WINNING_SCORE;
 	public static Random random;
 
