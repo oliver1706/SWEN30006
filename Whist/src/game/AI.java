@@ -15,11 +15,7 @@ public class AI {
 
     public static Card getCard(Hand currentTrick, Hand currentHand, Suit trump, Suit lead, Player player, int turnsLeft) {
         List<Card> filteredHand;
-        if(lead != null){
-            filteredHand = getFilteredHand(currentHand, trump, lead, player);
-        } else{
-            filteredHand = currentHand.getCardList();
-        }
+        filteredHand = getFilteredHand(currentHand, trump, lead, player);
         filteredHand.sort(rankComparator);
         return getCardToPlay(filteredHand, trump, lead, currentTrick, player, turnsLeft);
     }
