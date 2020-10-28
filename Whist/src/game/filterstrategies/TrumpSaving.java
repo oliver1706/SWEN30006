@@ -12,12 +12,16 @@ public class TrumpSaving implements FilterStrategy {
     public List<Card> getFilteredHand(Hand currentHand, Whist.Suit trump, Whist.Suit lead) {
         if (lead == null) return currentHand.getCardList();
         List<Card> leadCards = currentHand.getCardsWithSuit(lead);
-        if (!leadCards.isEmpty()) { return leadCards; }
+        if (!leadCards.isEmpty()) {
+            return leadCards;
+        }
         if (lead == trump) {
             return currentHand.getCardList();
         }
         List<Card> trumpCards = currentHand.getCardsWithSuit(trump);
-        if (!trumpCards.isEmpty()) { return trumpCards; }
+        if (!trumpCards.isEmpty()) {
+            return trumpCards;
+        }
         return currentHand.getCardList();
     }
 }

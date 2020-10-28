@@ -2,7 +2,6 @@ package game.selectionstrategies;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
-import game.AI;
 import game.SelectionStrategy;
 import game.Whist;
 
@@ -20,9 +19,9 @@ public class HighestRank implements SelectionStrategy {
 
         @Override
         public int compare(Card o1, Card o2) {
-            if (o1.getRankId() == o2.getRankId()){
+            if (o1.getRankId() == o2.getRankId()) {
                 return 0;
-            } else if (o1.getRankId() < o2.getRankId()){
+            } else if (o1.getRankId() < o2.getRankId()) {
                 return 1;
             } else {
                 return -1;

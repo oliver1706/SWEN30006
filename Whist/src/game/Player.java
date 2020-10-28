@@ -6,7 +6,7 @@ public class Player {
     private SelectionStrategy selectionStrategy;
     private PlayerType playerType;
 
-    public Player(String status, String filterStrategyString, String selectionStrategyString){
+    public Player(String status, String filterStrategyString, String selectionStrategyString) {
         try {
             playerType = PlayerType.valueOf(status);
         } catch (Exception e) {
@@ -32,15 +32,15 @@ public class Player {
         }
     }
 
-    public FilterStrategy getFilterStrategy(){
+    public FilterStrategy getFilterStrategy() {
         return filterStrategy;
     }
 
-    public SelectionStrategy getSelectionStrategy(){
+    public SelectionStrategy getSelectionStrategy() {
         return selectionStrategy;
     }
 
-    public PlayerType getPlayerType(){
+    public PlayerType getPlayerType() {
         return playerType;
     }
 }

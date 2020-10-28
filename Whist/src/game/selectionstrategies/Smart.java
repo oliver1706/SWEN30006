@@ -23,7 +23,7 @@ public class Smart implements SelectionStrategy {
         List<Card> higherCards = hand.stream().filter(card -> highestCardSorter.compare(card, currentHighest) > 0)
                 .sorted(highestCardSorter).collect(Collectors.toList());
         System.out.println("My higher cards are " + higherCards);
-        if(higherCards.isEmpty()){
+        if (higherCards.isEmpty()) {
             //We have no cards that can win
             return hand.get(0);
         } else {
@@ -37,29 +37,29 @@ public class Smart implements SelectionStrategy {
 
 
         @Override
-        public int compare(Card o1, Card o2){
-            if(o1.getSuit() == trump && o2.getSuit() != trump) {
+        public int compare(Card o1, Card o2) {
+            if (o1.getSuit() == trump && o2.getSuit() != trump) {
                 return 1;
             }
-            if(o1.getSuit() != trump && o2.getSuit() == trump) {
+            if (o1.getSuit() != trump && o2.getSuit() == trump) {
                 return -1;
             }
-            if(o1.getSuit() == trump && o2.getSuit() == trump) {
+            if (o1.getSuit() == trump && o2.getSuit() == trump) {
                 return Integer.compare(o2.getRankId(), o1.getRankId());
             }
-            if(o1.getSuit() == lead && o2.getSuit() != lead) {
+            if (o1.getSuit() == lead && o2.getSuit() != lead) {
                 return 1;
             }
-            if(o1.getSuit() != lead && o2.getSuit() == lead) {
+            if (o1.getSuit() != lead && o2.getSuit() == lead) {
                 return -1;
             }
-            if(o1.getSuit() == lead && o2.getSuit() == lead) {
+            if (o1.getSuit() == lead && o2.getSuit() == lead) {
                 return Integer.compare(o2.getRankId(), o1.getRankId());
             }
             return Integer.compare(o2.getRankId(), o1.getRankId());
         }
 
-        private HighestCardSorter(Whist.Suit trump, Whist.Suit lead){
+        private HighestCardSorter(Whist.Suit trump, Whist.Suit lead) {
             this.trump = trump;
             this.lead = lead;
         }

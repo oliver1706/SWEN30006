@@ -20,21 +20,21 @@ public class AI {
         return getCardToPlay(filteredHand, trump, lead, currentTrick, player, turnsLeft);
     }
 
-    private static List<Card> getFilteredHand(Hand currentHand, Suit trump, Suit lead, Player player){
+    private static List<Card> getFilteredHand(Hand currentHand, Suit trump, Suit lead, Player player) {
         return player.getFilterStrategy().getFilteredHand(currentHand, trump, lead);
     }
 
-    private static Card getCardToPlay(List<Card> filteredHand, Suit trump, Suit lead, Hand currentTrick, Player player, int turnsLeft){
+    private static Card getCardToPlay(List<Card> filteredHand, Suit trump, Suit lead, Hand currentTrick, Player player, int turnsLeft) {
         return player.getSelectionStrategy().getCard(filteredHand, trump, lead, currentTrick, turnsLeft);
     }
 
-    private static class HighestRankSorter implements Comparator<Card>{
+    private static class HighestRankSorter implements Comparator<Card> {
 
         @Override
         public int compare(Card o1, Card o2) {
-            if (o1.getRankId() == o2.getRankId()){
+            if (o1.getRankId() == o2.getRankId()) {
                 return 0;
-            } else if (o1.getRankId() < o2.getRankId()){
+            } else if (o1.getRankId() < o2.getRankId()) {
                 return 1;
             } else {
                 return -1;
