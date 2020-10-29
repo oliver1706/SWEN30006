@@ -283,11 +283,14 @@ public class Whist extends CardGame {
             System.exit(1);
         }
 
-        if (PLAYERS[0].getPlayerType() == PlayerType.DISABLED &&
-                PLAYERS[1].getPlayerType() == PlayerType.DISABLED &&
-                PLAYERS[2].getPlayerType() == PlayerType.DISABLED &&
-                PLAYERS[3].getPlayerType() == PlayerType.DISABLED) {
-            System.out.println("All 4 players were marked as disabled, Whist does not support this.");
+        int enabledPlayerCount = 0;
+        for (Player player : PLAYERS) {
+            if (player.getPlayerType() != PlayerType.DISABLED) {
+                enabledPlayerCount++;
+            }
+        }
+        if (enabledPlayerCount <= 1) {
+            System.out.println("Only 1 or fewer players were enabled (marked as AI or HUMAN), Whist does not support this.");
             System.exit(1);
         }
 
