@@ -275,8 +275,12 @@ public class Whist extends CardGame {
                 PLAYERS[i] = PlayerFactory.getPlayer(0, properties.getProperty("Player" + i),
                         properties.getProperty("Player" + i + "FilterStrategy"), properties.getProperty("Player" + i + "SelectionStrategy"));
             }
-            int seed = Integer.parseInt(properties.getProperty("Seed"));
-            random = new Random(seed);
+            if (properties.containsKey("Seed")) {
+                int seed = Integer.parseInt(properties.getProperty("Seed"));
+                random = new Random(seed);
+            } else {
+                random = new Random();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error loading in properties");
