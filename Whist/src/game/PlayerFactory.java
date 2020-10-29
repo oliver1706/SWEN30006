@@ -1,23 +1,11 @@
 package game;
 
-import java.util.Properties;
-
 public class PlayerFactory {
 
-    private static PlayerType playerType = null;
-    private static FilterStrategy filterStrategy = null;
-    private static SelectionStrategy selectionStrategy = null;
-
-    public static Player getPlayer(int playerNumber, Properties properties) {
-        String playerTypeString = null;
-        try {
-            playerTypeString = properties.getProperty("Player" + playerNumber);
-            ;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Could not load property Player" + playerNumber + "FilterStrategy");
-            System.exit(1);
-        }
+    public static Player getPlayer(int playerNumber, String playerTypeString, String filterStrategyString, String selectionStrategyString) {
+        PlayerType playerType = null;
+        FilterStrategy filterStrategy = null;
+        SelectionStrategy selectionStrategy = null;
         try {
             playerType = PlayerType.valueOf(playerTypeString);
         } catch (Exception e) {
@@ -26,22 +14,6 @@ public class PlayerFactory {
             System.exit(1);
         }
         if (playerType == PlayerType.AI) {
-            String filterStrategyString = null;
-            String selectionStrategyString = null;
-            try {
-                filterStrategyString = properties.getProperty("Player" + playerNumber + "FilterStrategy");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Could not load property Player" + playerNumber + "FilterStrategy");
-                System.exit(1);
-            }
-            try {
-                selectionStrategyString = properties.getProperty("Player" + playerNumber + "SelectionStrategy");
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Could not load property Player" + playerNumber + "SelectionStrategy");
-                System.exit(1);
-            }
             try {
                 filterStrategy = (FilterStrategy) Class.forName(filterStrategyString).getDeclaredConstructor().newInstance();
             } catch (Exception e) {
