@@ -271,14 +271,10 @@ public class Whist extends CardGame {
             properties.load(inStream);
             STARTING_CARDS = Integer.parseInt(properties.getProperty("StartingCards"));
             WINNING_SCORE = Integer.parseInt(properties.getProperty("WinningScore"));
-            PLAYERS[0] = new Player(properties.getProperty("Player0"),
-                    properties.getProperty("Player0FilterStrategy"), properties.getProperty("Player0SelectionStrategy"));
-            PLAYERS[1] = new Player(properties.getProperty("Player1"),
-                    properties.getProperty("Player1FilterStrategy"), properties.getProperty("Player1SelectionStrategy"));
-            PLAYERS[2] = new Player(properties.getProperty("Player2"),
-                    properties.getProperty("Player2FilterStrategy"), properties.getProperty("Player2SelectionStrategy"));
-            PLAYERS[3] = new Player(properties.getProperty("Player3"),
-                    properties.getProperty("Player3FilterStrategy"), properties.getProperty("Player3SelectionStrategy"));
+            PLAYERS[0] = PlayerFactory.getPlayer(0, properties);
+            PLAYERS[1] = PlayerFactory.getPlayer(1, properties);
+            PLAYERS[2] = PlayerFactory.getPlayer(2, properties);
+            PLAYERS[3] = PlayerFactory.getPlayer(3, properties);
             int seed = Integer.parseInt(properties.getProperty("Seed"));
             random = new Random(seed);
         } catch (Exception e) {
@@ -298,7 +294,7 @@ public class Whist extends CardGame {
         new Whist();
     }
 
-    public static Player PLAYERS[] = new Player[4];
+    public static Player[] PLAYERS = new Player[4];
     private static int STARTING_CARDS;
     public static int WINNING_SCORE;
     public static Random random;
