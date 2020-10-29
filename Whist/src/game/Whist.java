@@ -81,6 +81,9 @@ public class Whist extends CardGame {
 
     private void initScore() {
         for (int i = 0; i < nbPlayers; i++) {
+            if (PLAYERS[i].getPlayerType() == PlayerType.DISABLED) {
+                continue;
+            }
             scores[i] = 0;
             scoreActors[i] = new TextActor("0", Color.WHITE, bgColor, bigFont);
             addActor(scoreActors[i], scoreLocations[i]);
