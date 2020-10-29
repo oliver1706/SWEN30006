@@ -2,11 +2,13 @@ package game;
 
 public class PlayerFactory {
 
-    private static PlayerType playerType = null;
-    private static FilterStrategy filterStrategy = null;
-    private static SelectionStrategy selectionStrategy = null;
 
     public static Player getPlayer(String status, String filterStrategyString, String selectionStrategyString){
+
+        PlayerType playerType = null;
+        FilterStrategy filterStrategy = null;
+        SelectionStrategy selectionStrategy = null;
+
         try {
             playerType = PlayerType.valueOf(status);
         } catch (Exception e) {
