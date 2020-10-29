@@ -18,11 +18,11 @@ public class Smart implements SelectionStrategy {
         HighestCardSorter highestCardSorter = new HighestCardSorter(trump, lead);
         List<Card> playedCards = currentTrick.getCardList();
         playedCards.sort(highestCardSorter);
-        System.out.println("Highest current played cards are " + playedCards);
+        // System.out.println("Highest current played cards are " + playedCards);
         Card currentHighest = playedCards.get(playedCards.size() - 1);
         List<Card> higherCards = hand.stream().filter(card -> highestCardSorter.compare(card, currentHighest) > 0)
                 .sorted(highestCardSorter).collect(Collectors.toList());
-        System.out.println("My higher cards are " + higherCards);
+        // System.out.println("My higher cards are " + higherCards);
         if (higherCards.isEmpty()) {
             //We have no cards that can win
             return hand.get(0);
