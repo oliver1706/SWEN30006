@@ -1,4 +1,5 @@
 package game;
+// Team 7
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
